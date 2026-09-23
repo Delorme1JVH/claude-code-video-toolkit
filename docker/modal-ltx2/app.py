@@ -275,6 +275,10 @@ class LTX2:
         num_inference_steps = request.get("num_inference_steps", 30)
         seed = request.get("seed")
         quality = request.get("quality", "standard")
+        # Image conditioning strength for image-to-video. Lower = more motion /
+        # freedom from the still frame (better for dynamic action); higher =
+        # sticks closely to the input image (better for fidelity/faces).
+        image_cond_strength = float(request.get("image_cond_strength", 0.8))
         r2_config = request.get("r2")
 
         # Optional style LoRA. Rebuild the pipeline only when the requested
@@ -338,7 +342,7 @@ class LTX2:
                     ImageConditioningInput(
                         path=img_path,
                         frame_idx=0,
-                        strength=0.8,
+                        strength=image_cond_strength,
                         crf=0,  # lossless — no H.264 preprocessing
                     )
                 ]

@@ -114,6 +114,7 @@ def generate_video(
     seed: Optional[int] = None,
     quality: str = "standard",
     lora: Optional[str] = None,
+    strength: Optional[float] = None,
     open_result: bool = True,
     cloud: str = "modal",
     progress=None,
@@ -158,6 +159,8 @@ def generate_video(
         payload["input"]["seed"] = seed
     if lora:
         payload["input"]["lora"] = lora
+    if strength is not None:
+        payload["input"]["image_cond_strength"] = strength
 
     # Encode input image for I2V
     if input_path:
@@ -262,6 +265,10 @@ Examples:
     quality_group.add_argument("--steps", type=int,
                                help="Inference steps (default: 30 standard, 15 fast)")
     quality_group.add_argument("--seed", type=int, help="Random seed for reproducibility")
+    quality_group.add_argument("--strength", type=float,
+                               help="Image conditioning strength for image-to-video (0.0-1.0). "
+                                    "Lower = more motion/freedom from the still (dynamic action); "
+                                    "higher = sticks to the input image (fidelity/faces). Default 0.8.")
 
     # Output
     output_group = parser.add_argument_group("Output")
@@ -331,6 +338,7 @@ Examples:
         seed=args.seed,
         quality=args.quality,
         lora=args.lora,
+        strength=args.strength,
         open_result=not args.no_open,
         cloud=args.cloud,
         progress=reporter,
